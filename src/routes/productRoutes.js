@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Product = require('../models/productModel');
+const Product = require("../models/productModel");
 
 /**
  * @swagger
@@ -21,13 +21,13 @@ const Product = require('../models/productModel');
  *           type: number
  *         description:
  *           type: string
- *         stock:
+ *         quantity:
  *           type: number
  *       example:
  *         name: iPhone 14
  *         price: 999.99
  *         description: Latest Apple smartphone
- *         stock: 25
+ *         quantity: 25
  */
 
 /**
@@ -47,8 +47,22 @@ const Product = require('../models/productModel');
  *                 $ref: '#/components/schemas/Product'
  */
 router.get("/", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+  const { category, "price[gte]": minPrice, "price[lte]": maxPrice } = req.query;
+
+  const filter = {};
+  if (category) filter.category = category;
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = parseFloat(minPrice);
+    if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+  }
+
+  try {
+    const products = await Product.find(filter);
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -75,6 +89,65 @@ router.post("/", async (req, res) => {
 
 /**
  * @swagger
+ * /api/products/low-stock:
+ *   get:
+ *     summary: Get products with low stock
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: List of low-stock products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ */
+router.get("/low-stock", async (req, res) => {
+  try {
+    const lowStockProducts = await Product.find({ quantity: { $lt: 5 } });
+    res.json(lowStockProducts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/products/search:
+ *   get:
+ *     summary: Search products by name
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Product name to search for
+ *     responses:
+ *       200:
+ *         description: List of matching products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ */
+router.get("/search", async (req, res) => {
+  const { name } = req.query;
+  try {
+    const products = await Product.find({
+      name: new RegExp(name, "i"),
+    });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
  * /api/products/{id}:
  *   get:
  *     summary: Get a product by ID
@@ -97,9 +170,14 @@ router.post("/", async (req, res) => {
  *         description: Product not found
  */
 router.get("/:id", async (req, res) => {
-  const product = await Product.findById(req.params.id);
-  if (!product) return res.status(404).json({ message: "Product not found" });
-  res.json(product);
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -128,11 +206,16 @@ router.get("/:id", async (req, res) => {
  *         description: Product not found
  */
 router.put("/:id", async (req, res) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  if (!product) return res.status(404).json({ message: "Product not found" });
-  res.json(product);
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -155,30 +238,14 @@ router.put("/:id", async (req, res) => {
  *         description: Product not found
  */
 router.delete("/:id", async (req, res) => {
-  const product = await Product.findByIdAndDelete(req.params.id);
-  if (!product) return res.status(404).json({ message: "Product not found" });
-  res.json({ message: "Product deleted" });
-});
-
-/**
- * @swagger
- * /api/products/low-stock:
- *   get:
- *     summary: Get products with low stock
- *     tags: [Products]
- *     responses:
- *       200:
- *         description: List of low-stock products
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
- */
-router.get("/low-stock", async (req, res) => {
-  const products = await Product.find({ stock: { $lt: 5 } });
-  res.json(products);
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

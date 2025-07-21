@@ -1,201 +1,173 @@
-# Product-Catalog-API-Project
+# 📦 Product Catalog API Project
 
-* Video Walkthrough:**  
- (https://your-video-link.com)  
+A RESTful API for managing products and categories, built using **Node.js**, **Express**, and **MongoDB**. It supports creating, reading, updating, and deleting products, as well as filtering, searching, and checking low stock.
 ---
 
-## Product Catalog API
-
-A RESTful API built with **Node.js**, **Express.js**, and **MongoDB**. This backend powers a product catalog like an e-commerce platform and supports full CRUD operations, inventory tracking, product variants, category filtering, search, and more.
+##  Video Walkthrough  
+📹 [Watch Project Demo](https://your-video-link.com)
 
 ---
 
 ##  Features
 
--  Product CRUD (Create, Read, Update, Delete)
--  Category CRUD (if added)
--  Search by name and filter by category or price range
--  Product variants (e.g., size, color)
--  Inventory tracking (stock levels)
--  Discounted pricing
--  Low-stock reporting
--  Express validation & error handling
--  Swagger UI for live API documentation
--  Works with Postman, Thunder Client, Insomnia
+- Add, edit, delete, and view products
+- Search by name
+- Filter by category and price range
+- Track stock levels 
+- Organized folder structure
+- Tested using Insomnia/Postman
+- Swagger documentation
 
 ---
 
-##  Tech Stack
+## 🧰 Tech Stack
 
 | Layer        | Tech                 |
 |--------------|----------------------|
 | Backend      | Node.js, Express.js  |
-| Database     | MongoDB + Mongoose   |
+| Database     | MongoDB, Mongoose    |
+| Docs & Tests | Swagger UI, Insomnia |
 | Validation   | express-validator    |
-| Docs & Tests | Swagger UI, Postman  |
 
 ---
 
-##  Folder Structure
+## 📁 Folder Structure
+
+```
+
 Product-Catalog-API-Project/
+│
 ├── src/
-│ ├── controllers/ # Controller logic
-│ ├── models/ # Mongoose schemas
-│ ├── routes/ # API route files
-│ ├── swagger.js # Swagger config
-│ └── server.js # Main server file
-├── .env # Environment variables
+│   ├── controllers/       
+│   ├── models/         
+│   ├── routes/           
+│   ├── swagger.js         
+│   └── server.js          
+│
+├── .env                
 ├── .gitignore
 ├── package.json
-├── README.md # ← You're here
+├── README.md              # 
 
-yaml
-Copy
-Edit
+````
 
 ---
 
-##  Getting Started
+## ⚙️ Getting Started
 
-### 1. Clone the Repo
+### 1. Clone the Project
 
 ```bash
 git clone https://github.com/Mgrace1/Product-Catalog-API-Project.git
 cd Product-Catalog-API-Project
-2. Install Dependencies
-bash
-Copy
-Edit
-npm install
-3. Setup .env File
-Create a .env file in the root with:
+````
 
-env
-Copy
-Edit
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Create `.env` File
+
+Create a `.env` file in the root folder with:
+
+```
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/product_catalog
-4. Start MongoDB
-Make sure MongoDB is running locally:
+```
 
-bash
-Copy
-Edit
+### 4. Start MongoDB Locally
+
+```bash
 mongod
-5. Run the Project
-bash
-Copy
-Edit
+```
+
+### 5. Start the Project
+
+```bash
 npm run dev
- API Documentation
-Visit Swagger UI in your browser:
+```
+---
 
-bash
-Copy
-Edit
+## API Documentation
+
+Visit Swagger UI:
+
+```bash
 http://localhost:5000/api-docs
-🔗 Main Endpoints
-Method	Endpoint	Description
-GET	/products	Get all products
-GET	/products/:id	Get product by ID
-POST	/products	Create new product
-PUT	/products/:id	Update existing product
-DELETE	/products/:id	Delete product
-GET	/products/low-stock	Get products with low inventory
-GET	/products?search=phone	Search by name
-GET	/products?category=ID	Filter by category
-GET	/products?minPrice=10&maxPrice=100	Filter by price
+```
 
-Sample Request – Create Product
-http
-Copy
-Edit
-POST /products
-Content-Type: application/json
+---
 
-{
-  "name": "Modern Chair",
-  "description": "Comfortable ergonomic chair",
-  "price": 120,
-  "discount": 10,
-  "stock": 12,
-  "category": "64abce1234abcd5678efgh90",
-  "variants": [
-    { "size": "Medium", "color": "Black", "stock": 5 },
-    { "size": "Large", "color": "Gray", "stock": 7 }
-  ]
-}
- Testing with Insomia / Post man
- GET /products
+##  Main API Endpoints
 
- GET /products?search=phone
+| Method | Endpoint                              | Description             |
+| ------ | ------------------------------------- | ----------------------- |
+| GET    | `/products`                           | Get all products        |
+| GET    | `/products/:id`                       | Get product by ID       |
+| POST   | `/products`                           | Create new product      |
+| PUT    | `/products/:id`                       | Update product by ID    |
+| DELETE | `/products/:id`                       | Delete product by ID    |
+| GET    | `/products/low-stock`                 | Products with stock < 5 |
+| GET    | `/products?name=phone`                | Search products by name |
+| GET    | `/products?category=ID`               | Filter by category      |
+| GET    | `/products?price[gte]=X&price[lte]=Y` | Filter by price range   |
 
- POST /products
+---
 
- PUT /products/:id
 
- DELETE /products/:id
+##  Validation Rules
 
- Input Validation
-Required fields: name, price, category, stock
+* Required: `name`, `price`, `stock`, `category`
+* Fields like `price`, `discount`, and `stock` must be numbers
+* Uses `express-validator` to validate and sanitize input
+* Returns proper error messages on invalid input
 
-Validations:
+---
 
-price, stock, discount must be numbers
+##  Low Stock Reporting
 
-Clean and sanitized inputs using express-validator
+```http
+GET /products/low-stock
+```
 
-Proper 400 and 500 error messages
+* Returns products with stock less than 5
+* You can adjust threshold with query param:
+  `/products/low-stock?threshold=3`
 
- Low Stock Reporting
-http
-Copy
-Edit
-GET /products/low-stock?threshold=5
-Optional query param threshold sets the low-stock level (default is 5).
+---
 
- Example Category IDs
-json
-Copy
-Edit
+##  Example Categories
+
+```json
 [
   {
     "_id": "64eea01e8bc4c22a8b199ef5",
     "name": "Electronics",
     "description": "Phones, gadgets, etc."
   },
-  {
-    "_id": "64eea02a8bc4c22a8b199ef6",
-    "name": "Books",
-    "description": "Reading materials"
-  }
 ]
- Best Practices Used
- Clean folder structure
+```
+---
 
- .env file for environment management
+##
 
- Input validation
-
- Swagger docs
-
- Modular route/controller/model structure
-
- JWT-ready setup for future auth (optional)
-
- Contributing
-Feel free to fork and submit PRs. This project is great for learning backend basics!
-
- License
-MIT – Free for personal and commercial use.
-
-Owner
-Mgrace1 – GitHub Profile
-
+* Clean folder structure with MVC pattern
+* Environment variables with `.env`
+* Input validation and error handling
+* API documentation with Swagger
+* Easy to test in tools like Postman or Insomnia
+* JWT-ready setup (optional for future use)
 
 ---
 
-```bash
-git add .
-git commit -m "initial commit"
-git push
+##  Owner
+
+**Mgrace1**
+🔗 [GitHub Profile](https://github.com/Mgrace1)
+
+---
+
+
+
