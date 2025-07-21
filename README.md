@@ -1,10 +1,10 @@
-# 📦 Product Catalog API Project
+# Product Catalog API Project
 
 A RESTful API for managing products and categories, built using **Node.js**, **Express**, and **MongoDB**. It supports creating, reading, updating, and deleting products, as well as filtering, searching, and checking low stock.
 ---
 
 ##  Video Walkthrough  
-📹 [Watch Project Demo](https://your-video-link.com)
+(https://your-video-link.com)
 
 ---
 
@@ -20,7 +20,7 @@ A RESTful API for managing products and categories, built using **Node.js**, **E
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Layer        | Tech                 |
 |--------------|----------------------|
@@ -31,7 +31,7 @@ A RESTful API for managing products and categories, built using **Node.js**, **E
 
 ---
 
-## 📁 Folder Structure
+##  Folder Structure
 
 ```
 
